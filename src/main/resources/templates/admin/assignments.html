@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin - Assignments</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<h1>Assignments</h1>
+<form action="/templates/admin/assignments/save" method="post" th:object="${assignment}">
+    <label>Project:</label>
+    <select th:field="*{project}">
+        <option th:each="p : ${projects}" th:value="${p}" th:text="${p.name}"></option>
+    </select>
+    <label>Staff:</label>
+    <select th:field="*{staff}">
+        <option th:each="s : ${staffList}" th:value="${s}" th:text="${s.name}"></option>
+    </select>
+    <label>Machine:</label>
+    <select th:field="*{machine}">
+        <option value="">None</option>
+        <option th:each="m : ${machines}" th:value="${m}" th:text="${m.name}"></option>
+    </select>
+    <label>Date:</label><input type="date" th:field="*{assignedDate}"/><br>
+    <button type="submit">Assign</button>
+</form>
+
+<h2>Existing Assignments</h2>
+<table border="1">
+    <tr>
+        <th>ID</th><th>Project</th><th>Staff</th><th>Machine</th><th>Date</th><th>Actions</th>
+    </tr>
+    <tr th:each="a : ${assignments}">
+        <td th:text="${a.id}"></td>
+        <td th:text="${a.project.name}"></td>
+        <td th:text="${a.staff.name}"></td>
+        <td th:text="${a.machine != null ? a.machine.name : 'N/A'}"></td>
+        <td th:text="${a.assignedDate}"></td>
+        <td><a th:href="@{'/admin/assignments/delete/' + ${a.id}}">Delete</a></td>
+    </tr>
+</table>
+</body>
+</html>

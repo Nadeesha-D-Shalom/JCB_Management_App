@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>User - Assignments</title>
+  <meta charset="UTF-8"/>
+</head>
+<body>
+<h1>Assignments</h1>
+<table border="1">
+  <tr>
+    <th>ID</th><th>Project</th><th>Staff</th><th>Machine</th><th>Date</th>
+  </tr>
+  <tr th:each="a : ${assignments}">
+    <td th:text="${a.id}"></td>
+    <td th:text="${a.project.name}"></td>
+    <td th:text="${a.staff.name}"></td>
+    <td th:text="${a.machine != null ? a.machine.name : 'N/A'}"></td>
+    <td th:text="${a.assignedDate}"></td>
+  </tr>
+</table>
+</body>
+</html>
