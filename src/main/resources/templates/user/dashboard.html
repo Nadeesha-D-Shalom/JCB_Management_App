@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>User Dashboard</title>
+    <style>
+        :root{
+            --jcb-yellow:#FFD100;
+            --jcb-black:#000000;
+            --jcb-white:#ffffff;
+            --muted:#f5f5f5;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fafafa;color:#111}
+        header{background:var(--jcb-black);color:var(--jcb-white);padding:18px 24px;display:flex;align-items:center;gap:16px}
+        header .badge{background:var(--jcb-yellow);color:#111;font-weight:800;padding:6px 10px;border-radius:6px}
+        nav{background:var(--jcb-yellow);display:flex;gap:4px;padding:6px 8px}
+        nav a{color:#111;text-decoration:none;padding:10px 14px;border-radius:8px;font-weight:600}
+        nav a:hover{background:rgba(0,0,0,.08)}
+        .wrap{max-width:1100px;margin:20px auto;padding:0 16px}
+        .grid{display:grid;grid-template-columns:1fr;gap:16px}
+        @media(min-width:960px){.grid{grid-template-columns:1.1fr .9fr}}
+        .card{background:#fff;border:1px solid #eee;border-radius:14px;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+        .card h2{margin:0 0 12px 0;padding:16px 16px 0}
+        .card .body{padding:16px}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+        th{background:#fafafa}
+        .k{display:inline-flex;gap:8px;align-items:center}
+        .btn{border:0;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
+        .btn-black{background:var(--jcb-black);color:#fff}
+        .btn-yellow{background:var(--jcb-yellow);color:#111}
+        .btn-ghost{background:transparent;border:1px solid #ddd}
+        .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+        label{font-size:12px;color:#444;margin-bottom:6px;display:block}
+        select,input{width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;background:#fff}
+        .alert{padding:10px 12px;border-radius:10px;margin:10px 0}
+        .alert-error{background:#ffe9e9;border:1px solid #f6bcbc}
+        .alert-ok{background:#ecffe9;border:1px solid #b9f0b1}
+        .muted{color:#777;font-size:12px}
+    </style>
+</head>
+<body>
+<header>
+    <div class="badge">JCB</div>
+    <div><strong>User Dashboard</strong></div>
+</header>
+
+<nav>
+    <a href="#projects" onclick="showTab('projects')">Projects</a>
+    <a href="#machines" onclick="showTab('machines')">Machines</a>
+    <a href="#bookings" onclick="showTab('bookings')">Bookings</a>
+</nav>
+
+<div class="wrap">
+
+    <div th:if="${param.success}" class="alert alert-ok">Action completed.</div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}">Error</div>
+
+    <div class="grid">
+        <!-- Projects -->
+        <section id="projects" class="card tab">
+            <h2>Projects</h2>
+            <div class="body">
+                <table>
+                    <thead><tr><th>#</th><th>Name</th><th>Description</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <tr th:each="p : ${projects}">
+                        <td th:text="${p.id}">1</td>
+                        <td th:text="${p.name}">Site A</td>
+                        <td th:text="${p.description}">Desc</td>
+                        <td th:text="${p.status}">NEW</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Book JCB -->
+        <section id="bookings" class="card tab" style="display:none">
+            <h2>Book a JCB</h2>
+            <div class="body">
+                <form th:action="@{/user/book}" th:object="${bookingDTO}" method="post">
+                    <div class="row3">
+                        <div>
+                            <label>Project</label>
+                            <select th:field="*{projectId}">
+                                <option th:each="p : ${projects}" th:value="${p.id}" th:text="${p.name}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Machine</label>
+                            <select th:field="*{machineId}">
+                                <option th:each="m : ${machines}" th:value="${m.id}" th:text="${m.name}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Start date</label>
+                            <input type="date"
+                                   th:field="*{startDate}"
+                                   th:attr="min=${#temporals.format(#temporals.createNow(),'yyyy-MM-dd')}">
+                            <div class="muted">No past dates</div>
+                        </div>
+                        <div>
+                            <label>End date</label>
+                            <input type="date"
+                                   th:field="*{endDate}"
+                                   th:attr="min=${#temporals.format(#temporals.createNow(),'yyyy-MM-dd')}">
+                        </div>
+                        <div style="align-self:end">
+                            <button type="submit" class="btn btn-black">Book</button>
+                        </div>
+                    </div>
+                </form>
+
+                <h3 style="margin-top:20px">Your Bookings</h3>
+                <table>
+                    <thead>
+                    <tr><th>#</th><th>Project</th><th>Machine</th><th>From</th><th>To</th><th>Status</th><th>Operator</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="b : ${bookings}">
+                        <td th:text="${b.id}">1</td>
+                        <td th:text="${b.project.name}">Proj</td>
+                        <td th:text="${b.machine.name}">JCB</td>
+                        <td th:text="${#temporals.format(b.startDate,'yyyy-MM-dd')}">2025-10-01</td>
+                        <td th:text="${#temporals.format(b.endDate,'yyyy-MM-dd')}">2025-10-03</td>
+                        <td th:text="${b.confirmed ? 'Confirmed' : 'Pending'}"></td>
+                        <td th:text="${b.operator != null ? b.operator.name : '—'}"></td>
+                        <td>
+                            <form th:action="@{'/user/booking/' + ${b.id} + '/delete'}" method="post" th:if="${!b.confirmed}">
+                                <button class="btn btn-ghost" type="submit">Delete</button>
+                            </form>
+                            <span th:if="${b.confirmed}" class="muted">Locked</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Machines -->
+        <section id="machines" class="card tab" style="display:none">
+            <h2>Machines</h2>
+            <div class="body">
+                <table>
+                    <thead><tr><th>#</th><th>Name</th><th>Type</th></tr></thead>
+                    <tbody>
+                    <tr th:each="m : ${machines}">
+                        <td th:text="${m.id}"></td>
+                        <td th:text="${m.name}"></td>
+                        <td th:text="${m.type}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    function showTab(id){
+        document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
+        document.getElementById(id).style.display='block';
+    }
+</script>
+</body>
+</html>

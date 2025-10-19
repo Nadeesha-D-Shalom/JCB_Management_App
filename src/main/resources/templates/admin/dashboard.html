@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>JCB Admin Dashboard</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fffef5;
+            margin: 0;
+            color: #1a1a1a;
+        }
+        header {
+            background-color: #000;
+            color: #FFD700;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        nav {
+            background-color: #FFD700;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 15px 0;
+        }
+        nav a {
+            color: #000;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        nav a:hover {
+            color: white;
+        }
+        .container {
+            padding: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #000;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 14px;
+            text-align: left;
+        }
+        th {
+            background-color: #000;
+            color: #FFD700;
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        button {
+            background-color: #FFD700;
+            border: none;
+            color: #000;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #000;
+            color: #FFD700;
+        }
+        .alert {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .alert-success {
+            background-color: #e6ffcc;
+            color: #2f7a00;
+        }
+        .alert-error {
+            background-color: #ffe0e0;
+            color: #a80000;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🚜 JCB Admin Dashboard</h1>
+</header>
+
+<nav>
+    <a th:href="@{/admin/projects}">Projects</a>
+    <a th:href="@{/admin/machines}">Machines</a>
+    <a th:href="@{/admin/bookings}">Bookings</a>
+    <a th:href="@{/admin/operators}">Operators</a>
+</nav>
+
+<div class="container">
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <h2>Bookings</h2>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Project</th>
+            <th>Machine</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Confirmed</th>
+            <th>Operator</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="b, stat : ${bookings}">
+            <td th:text="${stat.index + 1}"></td>
+            <td th:text="${b.project.name}"></td>
+            <td th:text="${b.machine.name}"></td>
+            <td th:text="${b.startDate}"></td>
+            <td th:text="${b.endDate}"></td>
+            <td th:text="${b.confirmed ? 'Yes' : 'No'}"></td>
+            <td th:text="${b.operator != null ? b.operator.name : '—'}"></td>
+            <td>
+                <form th:action="@{/admin/bookings/{id}/confirm(id=${b.id})}" method="post" style="display:inline;">
+                    <select name="operatorId" th:each="op : ${operators}" th:value="${op.id}" th:text="${op.name}"></select>
+                    <button type="submit">Confirm</button>
+                </form>
+                <form th:action="@{/admin/bookings/{id}/delete(id=${b.id})}" method="post" style="display:inline;">
+                    <button type="submit" style="background:#000;color:white;">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
