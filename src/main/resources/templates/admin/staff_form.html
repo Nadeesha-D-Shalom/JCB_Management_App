@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Staff</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<h1>Add Staff</h1>
+<form action="/templates/admin/staff/save" method="post" th:object="${staff}">
+    <label>Name:</label><input type="text" th:field="*{name}"/><br>
+    <label>Role:</label><input type="text" th:field="*{role}"/><br>
+    <label>Available:</label><input type="checkbox" th:field="*{availability}"/><br>
+    <button type="submit">Save</button>
+</form>
+</body>
+</html>
