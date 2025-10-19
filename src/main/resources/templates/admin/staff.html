@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Admin - Staff</title>
+  <meta charset="UTF-8"/>
+</head>
+<body>
+<h1>Staff</h1>
+<a href="/templates/admin/staff/new">+ Add New Staff</a>
+<table border="1">
+  <tr>
+    <th>ID</th><th>Name</th><th>Role</th><th>Available</th><th>Actions</th>
+  </tr>
+  <tr th:each="s : ${staffList}">
+    <td th:text="${s.id}"></td>
+    <td th:text="${s.name}"></td>
+    <td th:text="${s.role}"></td>
+    <td th:text="${s.availability}"></td>
+    <td>
+      <a th:href="@{'/admin/staff/delete/' + ${s.id}}">Delete</a>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
